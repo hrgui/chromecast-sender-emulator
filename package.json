@@ -6,7 +6,12 @@
   "scripts": {
     "build": "tsc"
   },
+  "dependencies": {
+    "deepmerge": "^4.3.1"
+  },
   "devDependencies": {
+    "@types/chromecast-caf-receiver": "^6.0.10",
+    "@types/chromecast-caf-sender": "^1.0.6",
     "@types/node": "^20.6.3",
     "@types/ws": "^8.5.5",
     "chalk": "^5.3.0",

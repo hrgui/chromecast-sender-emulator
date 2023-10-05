@@ -1,1 +1,1 @@
-export { CastSenderEmulator } from "./CastDeviceEmulator";
+export { CastSenderEmulator } from "./emulator";

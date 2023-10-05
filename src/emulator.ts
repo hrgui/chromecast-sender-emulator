@@ -1,6 +1,7 @@
 import WebSocket from "ws";
 import { log } from "./logger";
-import { identifyMessageEvent, loadEvent } from "./CastDefaultEvents";
+import { CastSession } from "./cast-session";
+import { IdentifyEventMessage, LoadEventMessage } from "./cast-events";
 
 /**
  * Configuration for WebSocket server
@@ -28,6 +29,7 @@ export class CastSenderEmulator {
   activeWebSocket?: WebSocket | null = null;
   _waiting = makeDeferred();
   onConnection: any = null;
+  castSession = new CastSession();
 
   constructor(options = {}) {
     this.options = options;
@@ -53,6 +55,7 @@ export class CastSenderEmulator {
           this.webSocketServer?.on("connection", (s) => {
             this._webSocketConnectionHandler(s);
             resolve();
+            // this.
           });
           if (!this.options.silent) {
             log(`Established a websocket server at port ${serverConfig.port}`);
@@ -118,12 +121,18 @@ export class CastSenderEmulator {
     });
   }
 
-  identify() {
-    return this.send(this.activeWebSocket, identifyMessageEvent);
+  identify(identifyMessage: Partial<IdentifyEventMessage> = {}) {
+    return this.send(
+      this.activeWebSocket,
+      this.castSession.createIdentifyEventMessage(identifyMessage)
+    );
   }
 
-  load(ws: WebSocket) {
-    return this.send(this.activeWebSocket, loadEvent);
+  load(loadEventMessage: Partial<LoadEventMessage> = {}) {
+    return this.send(
+      this.activeWebSocket,
+      this.castSession.createLoadEventMessage(loadEventMessage)
+    );
   }
 
   /**

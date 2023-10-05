@@ -1,10 +1,9 @@
 const { CastSenderEmulator } = require("./dist");
+const repl = require("repl");
 
 async function main() {
-  const cde = new CastSenderEmulator();
-  await cde.start();
-  await cde.identify();
-  await cde.load();
+  const replInstance = repl.start("> ");
+  replInstance.context.cse = new CastSenderEmulator();
 }
 
 main();
