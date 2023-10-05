@@ -3,7 +3,9 @@ import {
   createSenderId,
   createSessionId,
   createLoadEventMessage,
+  createMediaActionMessage,
   createGetMediaStatusEventMessage,
+  createCustomMessage,
   LoadEventMessage,
   createIdentifyEventMessage,
   IdentifyEventMessage,
@@ -15,6 +17,7 @@ export class CastSession {
   senderId = createSenderId();
   sessionId = createSessionId();
   requestId = 889570260;
+  mediaSessionId = 0;
 
   getNextRequestId() {
     this.requestId += 1;
@@ -29,11 +32,82 @@ export class CastSession {
       media: {} as MediaInformation,
     };
 
+    this.mediaSessionId += 1;
+
     return createLoadEventMessage(deepmerge(loadMessageStructure, loadEventMessage), this.senderId);
+  }
+
+  createPauseMessage() {
+    return createMediaActionMessage({
+      mediaAction: "PAUSE",
+      mediaSessionId: this.mediaSessionId,
+      requestId: this.getNextRequestId(),
+      senderId: this.senderId,
+    });
+  }
+
+  createPlayMessage() {
+    return createMediaActionMessage({
+      mediaAction: "PLAY",
+      mediaSessionId: this.mediaSessionId,
+      requestId: this.getNextRequestId(),
+      senderId: this.senderId,
+    });
+  }
+
+  createStopMessage() {
+    return createMediaActionMessage({
+      mediaAction: "STOP",
+      mediaSessionId: this.mediaSessionId,
+      requestId: this.getNextRequestId(),
+      senderId: this.senderId,
+    });
+  }
+
+  createSeekMessage(seconds: number) {
+    return createMediaActionMessage({
+      mediaAction: "SEEK",
+      mediaSessionId: this.mediaSessionId,
+      requestId: this.getNextRequestId(),
+      senderId: this.senderId,
+      other: {
+        currentTime: seconds,
+      },
+    });
+  }
+
+  createClosedCaptionsOnMessage(overrides = {}) {
+    return createMediaActionMessage({
+      mediaAction: "EDIT_TRACKS_INFO",
+      mediaSessionId: this.mediaSessionId,
+      requestId: this.getNextRequestId(),
+      senderId: this.senderId,
+      other: {
+        enableTextTracks: true,
+        ...overrides,
+      },
+    });
+  }
+
+  createClosedCaptionsOffMessage(overrides = {}) {
+    return createMediaActionMessage({
+      mediaAction: "EDIT_TRACKS_INFO",
+      mediaSessionId: this.mediaSessionId,
+      requestId: this.getNextRequestId(),
+      senderId: this.senderId,
+      other: {
+        activeTrackIds: [],
+        ...overrides,
+      },
+    });
   }
 
   createGetMediaStatusEventMessage() {
     return createGetMediaStatusEventMessage(this.getNextRequestId(), this.senderId);
+  }
+
+  createCustomMessage(data: { [name: string]: any }, namespace: string) {
+    return createCustomMessage(data, namespace, this.senderId);
   }
 
   createIdentifyEventMessage(identifyMessage: Partial<IdentifyEventMessage> = {}) {
@@ -44,7 +118,7 @@ export class CastSession {
       deviceCapabilities: {
         bluetooth_supported: true,
         display_supported: true,
-        touch_input_supported: true,
+        touch_input_supported: false,
         focus_state_supported: true,
         hi_res_audio_supported: false,
       },

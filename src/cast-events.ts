@@ -98,6 +98,43 @@ export function createLoadEventMessage(loadEventMessage: LoadEventMessage, sende
   };
 }
 
+export function createMediaActionMessage({
+  mediaAction,
+  mediaSessionId,
+  requestId,
+  senderId,
+  other,
+}: {
+  mediaAction: string;
+  mediaSessionId: string | number;
+  requestId: string | number;
+  senderId: string;
+  other?: any;
+}) {
+  return {
+    data: JSON.stringify({
+      requestId,
+      type: mediaAction,
+      mediaSessionId,
+      ...other,
+    }),
+    namespace: "urn:x-cast:com.google.cast.media",
+    senderId: senderId,
+  };
+}
+
+export function createCustomMessage(
+  data: { [name: string]: any },
+  namespace: string,
+  senderId: string
+) {
+  return {
+    data: JSON.stringify(data),
+    namespace,
+    senderId,
+  };
+}
+
 export function createIdentifyEventMessage(identifyMessage: IdentifyEventMessage) {
   return {
     data: JSON.stringify(identifyMessage),

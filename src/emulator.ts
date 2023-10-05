@@ -135,6 +135,40 @@ export class CastSenderEmulator {
     );
   }
 
+  pause() {
+    return this.send(this.activeWebSocket, this.castSession.createPauseMessage());
+  }
+
+  play() {
+    return this.send(this.activeWebSocket, this.castSession.createPlayMessage());
+  }
+
+  stopMedia() {
+    return this.send(this.activeWebSocket, this.castSession.createStopMessage());
+  }
+
+  seek(seconds: number) {
+    return this.send(this.activeWebSocket, this.castSession.createSeekMessage(seconds));
+  }
+
+  sendCustomMessage(data: { [name: string]: any }, namespace: string) {
+    return this.send(this.activeWebSocket, this.castSession.createCustomMessage(data, namespace));
+  }
+
+  closedCaptionsOn(overrides = {}) {
+    return this.send(
+      this.activeWebSocket,
+      this.castSession.createClosedCaptionsOnMessage(overrides)
+    );
+  }
+
+  closedCaptionsOff(overrides = {}) {
+    return this.send(
+      this.activeWebSocket,
+      this.castSession.createClosedCaptionsOnMessage(overrides)
+    );
+  }
+
   /**
    * Handle incoming WebSocket messages
    */
